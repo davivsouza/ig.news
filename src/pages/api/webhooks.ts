@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Readable } from 'stream'
-import {Stripe} from "stripe";
+import Stripe from "stripe";
 import { stripe } from "../../services/stripe";
 import { saveSubscription } from "./_lib/manageSubscription";
 
@@ -25,8 +25,12 @@ export const config = {
 }
 
 const relevantEvents = new Set([
-  'checkout.session.completed'
+  'checkout.session.completed',
+  'customer.subscriptions.created',
+  "customer.subscriptions.updated",
+  "customer.subscriptions.deleted"
 ])
+
 export default async (req:NextApiRequest, res:NextApiResponse) => {
   if(req.method === 'POST'){
     const buf = await buffer(req)
@@ -40,15 +44,31 @@ export default async (req:NextApiRequest, res:NextApiResponse) => {
       res.status(400).send(`Webhook error: ${err.message}`)
     }
 
-    const {type} = event
+    const {type} = event!
 
     if(relevantEvents.has(type)){
       try{
         switch(type){
+          case "customer.subscription.updated":
+          case "customer.subscription.deleted":
+            const subscription = event.data.object as Stripe.Subscription
+
+            await saveSubscription(
+              subscription.id,
+              subscription.customer.toString(),
+              false
+            )
+
+            break;
+            
           case "checkout.session.completed":
                                         //dados do event
             const checkoutSession = event.data.object as Stripe.Checkout.Session
-            await saveSubscription(checkoutSession.customer?.toString(), checkoutSession.subscription?.toString())
+            await saveSubscription(
+              checkoutSession.subscription?.toString(),
+              checkoutSession.customer?.toString(),
+              true
+            )
             break
           default:
             throw new Error('Unhandled event.')
