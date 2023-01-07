@@ -1,0 +1,26 @@
+{
+  "uid": {
+    "__TYPE__": "UIDContent",
+    "value": "object"
+  },
+  "title": {
+    "__TYPE__": "FieldContent",
+    "value": "research",
+    "type": "Text"
+  },
+  "content": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "paragraph",
+        "content": {
+          "text": "Dolor non et eu tempor. Commodo ex duis laborum voluptate quis labore sit. Lorem elit deserunt duis tempor amet nostrud ex."
+        }
+      }
+    ]
+  },
+  "slices": {
+    "__TYPE__": "SliceContentType",
+    "value": []
+  }
+}
