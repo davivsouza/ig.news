@@ -37,8 +37,9 @@ export default function PostPreview({ post }: PostPreviewProps) {
   )
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths= async () => {
   return {
+    //usando a 2º opção - Gerar static pages conforme usuário vai acessando
     paths: [],
     fallback: 'blocking'
   }
@@ -66,6 +67,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return {
     props: {
       post
-    }
+    },
+    revalidate: 60*30 //30 min
   }
 }
